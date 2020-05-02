@@ -75,6 +75,7 @@ export interface IGatsbyNode {
 export interface IGatsbyPlugin {
   name: string
   version: string
+  id?: Identifier
 }
 
 export interface IGatsbyPluginContext {
@@ -221,10 +222,12 @@ export interface ICachedReduxState {
 export type ActionsUnion =
   | IAddThirdPartySchema
   | ICreateFieldExtension
+  | ICreatePageAction
   | ICreatePageDependencyAction
   | ICreateTypes
   | IDeleteCacheAction
   | IDeleteComponentDependenciesAction
+  | IDeletePageAction
   | IPageQueryRunAction
   | IPrintTypeDefinitions
   | IQueryExtractedAction
@@ -375,6 +378,12 @@ export interface ICreateResolverContext {
     | { [camelCasedPluginNameWithoutPrefix: string]: IGatsbyPluginContext }
 }
 
+export interface ICreatePageAction {
+  type: `CREATE_PAGE`
+  payload: IGatsbyPage
+  plugin?: IGatsbyPlugin
+}
+
 export interface ICreateRedirectAction {
   type: `CREATE_REDIRECT`
   payload: IRedirect
@@ -382,6 +391,11 @@ export interface ICreateRedirectAction {
 
 export interface IDeleteCacheAction {
   type: `DELETE_CACHE`
+}
+
+export interface IDeletePageAction {
+  type: `DELETE_PAGE`
+  payload: IGatsbyPage
 }
 
 export interface IReplaceStaticQueryAction {
