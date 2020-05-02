@@ -1,9 +1,11 @@
 const jobsManager = require(`../../utils/jobs-manager`)
 jest.spyOn(jobsManager, `enqueueJob`)
 jest.spyOn(jobsManager, `removeInProgressJob`)
-jest.mock(`uuid/v4`, () => () => `1234`)
+jest.mock(`uuid/v4`, () => (): void => `1234`)
 
-const jobsReducer = require(`../reducers/jobsv2`)
+import { IGatsbyState } from "../types"
+
+import { jobsV2Reducer as jobsReducer } from "../reducers/jobsv2"
 
 describe(`Job v2 actions/reducer`, () => {
   const plugin = {
@@ -11,7 +13,7 @@ describe(`Job v2 actions/reducer`, () => {
     version: `1.0.0`,
     resolve: `/node_modules/test-plugin`,
   }
-  const createGlobalState = defaultState => {
+  const createGlobalState = (defaultState): IGatsbyState => {
     return {
       program: {
         directory: __dirname,
@@ -26,14 +28,15 @@ describe(`Job v2 actions/reducer`, () => {
     jobsManager.enqueueJob.mockImplementation(() => Promise.resolve(`myresult`))
   })
 
-  const createDispatcher = globalState => {
-    const dispatch = realAction => jobsReducer(getState().jobsV2, realAction)
-    const getState = () => globalState
+  const createDispatcher = (globalState): Function => {
+    const getState = (): IGatsbyState => globalState
+    const dispatch = (realAction): IGatsbyState["jobsV2"] =>
+      jobsReducer(getState().jobsV2, realAction)
 
-    return action => action(dispatch, getState)
+    return (action): IGatsbyState => action(dispatch, getState)
   }
 
-  const getIsolatedActions = () => {
+  const getIsolatedActions = (): any => {
     let allActions
     jest.isolateModules(() => {
       const { actions, internalActions } = require(`../actions`)
